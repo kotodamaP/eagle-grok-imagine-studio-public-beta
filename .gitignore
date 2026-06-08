@@ -20,3 +20,11 @@ public-repo-release-kit-report/
 *.local.*
 generated/
 outputs/
+
+# Runtime traces and user/Eagle-derived metadata must never be committed.
+job_request.json
+job_result.json
+moderation-errors.jsonl
+metadata.json
+metadata.*.json
+eagle-metadata*.json

@@ -31,8 +31,8 @@ const DEFAULTS = {
   ffmpeg: envDefault('FFMPEG_PATH', 'ffmpeg'),
   ffprobe: envDefault('FFPROBE_PATH', 'ffprobe'),
   grokDownloads: '',
-  upscaylBin: envDefault('UPSCAYL_BIN', 'C:\\Program Files\\Upscayl\\resources\\bin\\upscayl-bin.exe'),
-  upscaylModels: envDefault('UPSCAYL_MODELS', 'C:\\Program Files\\Upscayl\\resources\\models')
+  upscaylBin: envDefault('UPSCAYL_BIN', ''),
+  upscaylModels: envDefault('UPSCAYL_MODELS', '')
 };
 const IMAGE_EXTS = importer && importer.IMAGE_EXTS
   ? importer.IMAGE_EXTS

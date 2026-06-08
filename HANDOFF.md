@@ -23,6 +23,7 @@ The plugin is API-free from the repository perspective: it does not ship an xAI/
 - Keep `.env` and real local config files ignored.
 - Include only placeholder examples such as `.env.example` and `config.example.json`.
 - Do not add user-specific Eagle library paths or local executable paths to defaults.
+- Never commit runtime logs, `job_request.json`, `job_result.json`, `moderation-errors.jsonl`, or metadata exported from an Eagle library. If any of these appear in a release diff, stop and remove them before continuing.
 
 ## Debugging Status
 
@@ -60,4 +61,4 @@ Then open `http://127.0.0.1:8787/index.html` and inspect `codexSmokeResult`.
 - Grok quota and current Grok Build behavior are external and may change.
 - Eagle Plugin API behavior should be checked inside the actual Eagle app, not only through browser mocks.
 - Irodori-TTS integration requires the user to install and configure Irodori-TTS separately.
-- The project has no final public license selected yet. Choose a license before publication.
+- The plugin code and documentation are published under the MIT License. Third-party tools, services, models, and binaries keep their own terms.
