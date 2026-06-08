@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grok Imagine Studio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #101217;
+      --surface: #171b24;
+      --surface-2: #20283a;
+      --field: #0d1118;
+      --line: #303a4d;
+      --line-soft: #242c3a;
+      --text: #eef4ff;
+      --muted: #aab6c8;
+      --dim: #78869b;
+      --accent: #4f8cff;
+      --accent-2: #68d2ff;
+      --danger: #ee756c;
+      --info: #73b7ff;
+      --shadow: rgba(0, 0, 0, 0.28);
+      --radius: 8px;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      font-size: 13px;
+      line-height: 1.45;
+      letter-spacing: 0;
+      user-select: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      color: var(--text);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.18);
+    }
+
+    textarea {
+      min-height: 118px;
+      resize: vertical;
+      padding: 10px;
+      user-select: text;
+    }
+
+    input,
+    select {
+      height: 32px;
+      padding: 0 9px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 12px;
+    }
+
+    .titlebar {
+      height: 34px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #131720;
+      border-bottom: 1px solid var(--line-soft);
+      -webkit-app-region: drag;
+    }
+
+    .title {
+      font-weight: 740;
+      color: var(--text);
+    }
+
+    .title .beta-label {
+      margin-left: 8px;
+      color: #5ee28a;
+      font-weight: 600;
+    }
+
+    .window-actions {
+      display: flex;
+      gap: 4px;
+      -webkit-app-region: no-drag;
+    }
+
+    .window-actions button {
+      width: 30px;
+      height: 26px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .window-actions button:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .app {
+      height: calc(100vh - 34px);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .toolbar {
+      padding: 12px 14px 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line-soft);
+      background: #121720;
+      flex-shrink: 0;
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(190px, 1fr));
+      gap: 4px;
+      padding: 4px;
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .segmented button {
+      height: 34px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .segmented #modeVoice {
+      grid-column: 1 / -1;
+    }
+
+    .segmented button.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(79, 140, 255, 0.28);
+    }
+
+    .status-pill {
+      min-width: 140px;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) minmax(560px, 1fr);
+      gap: 14px;
+      position: relative;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .corner-grok-watermark {
+      position: fixed;
+      left: var(--watermark-left, 26px);
+      top: var(--watermark-top, 50vh);
+      width: var(--watermark-size, min(230px, 32vw));
+      aspect-ratio: 1;
+      color: #ffffff;
+      opacity: 0.085;
+      pointer-events: none;
+      z-index: 0;
+      filter: drop-shadow(0 10px 28px rgba(79, 140, 255, 0.18));
+      transition: left 120ms ease, top 120ms ease, width 120ms ease, opacity 120ms ease;
+    }
+
+    .corner-grok-watermark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      height: 38px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #151a23;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .panel-title {
+      font-weight: 760;
+    }
+
+    .panel-sub {
+      color: var(--dim);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .panel-body {
+      padding: 12px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .row.wrap {
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      min-width: 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full-span {
+      grid-column: 1 / -1;
+    }
+
+    .btn {
+      min-height: 32px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn.primary {
+      border-color: rgba(79, 140, 255, 0.62);
+      background: #18315a;
+      color: #d6e8ff;
+    }
+
+    .btn.warn {
+      border-color: rgba(241, 190, 98, 0.55);
+      background: #342b18;
+      color: #ffe0a4;
+    }
+
+    .btn.danger {
+      border-color: rgba(238, 117, 108, 0.55);
+      background: #361c1a;
+      color: #ffb5af;
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: default;
+      border-color: var(--line);
+      color: var(--dim);
+    }
+
+    .refs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .drop-zone {
+      margin-top: 10px;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(79, 140, 255, 0.06);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .drop-zone.dragover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(79, 140, 255, 0.12);
+    }
+
+    .drop-zone.disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .ref-item,
+    .candidate {
+      border: 1px solid var(--line);
+      background: #121720;
+      border-radius: 8px;
+      padding: 8px;
+      min-width: 0;
+    }
+
+    .ref-preview {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--field);
+      border: 1px solid var(--line-soft);
+      margin-bottom: 7px;
+    }
+
+    .ref-preview img,
+    .ref-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ref-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      min-width: 28px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(79, 140, 255, 0.68);
+      background: rgba(13, 15, 13, 0.86);
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .ref-name,
+    .candidate-name {
+      font-weight: 720;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .meta {
+      margin-top: 4px;
+      color: var(--dim);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hint {
+      color: var(--dim);
+      font-size: 12px;
+    }
+
+    .notice {
+      border: 1px solid rgba(115, 183, 216, 0.4);
+      background: rgba(115, 183, 216, 0.08);
+      color: #ccecff;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 12px;
+    }
+
+    .warning {
+      border-color: rgba(241, 190, 98, 0.45);
+      background: rgba(241, 190, 98, 0.08);
+      color: #ffe0a4;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .results-column .list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      align-items: start;
+    }
+
+    .candidate {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .candidate.upscaled {
+      opacity: 0.58;
+    }
+
+    .candidate.audio-candidate {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .candidate-preview {
+      width: 92px;
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--field);
+      border: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dim);
+      font-size: 12px;
+    }
+
+    .candidate-preview img,
+    .candidate-preview video,
+    .candidate-preview audio {
+      width: 100%;
+      display: block;
+    }
+
+    .candidate-preview img,
+    .candidate-preview video {
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .candidate-preview audio {
+      padding: 8px;
+    }
+
+    .candidate.audio-candidate .candidate-preview {
+      width: 100%;
+      min-height: 48px;
+      aspect-ratio: auto;
+    }
+
+    .candidate.audio-candidate .candidate-actions {
+      grid-column: 1;
+    }
+
+    .candidate-actions {
+      grid-column: 2;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .candidate-actions .btn {
+      min-height: 28px;
+      padding: 0 9px;
+      font-size: 12px;
+    }
+
+    .status-label-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 7px;
+    }
+
+    .status-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 0 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .status-label.video-upscaled {
+      border: 1px solid rgba(115, 183, 216, 0.62);
+      background: rgba(115, 183, 216, 0.16);
+      color: #ccecff;
+    }
+
+    .checklist {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .checklist li {
+      margin: 5px 0;
+    }
+
+    .log {
+      height: 145px;
+      overflow: auto;
+      padding: 9px;
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--muted);
+      user-select: text;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+
+    .progress {
+      height: 8px;
+      background: var(--field);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .usage-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .usage-stat {
+      min-height: 58px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--field);
+    }
+
+    .usage-label {
+      color: var(--dim);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .usage-value {
+      margin-top: 4px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .footer-note {
+      padding-top: 8px;
+      color: var(--dim);
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .textarea-action {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .textarea-action.left {
+      justify-content: flex-start;
+    }
+
+    .model-display {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--field);
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .section-label {
+      margin: 12px 0 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .script-toolbar,
+    .result-header-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .script-toolbar {
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .script-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .script-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 34px;
+      gap: 8px;
+      align-items: stretch;
+      padding: 9px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: rgba(13, 15, 13, 0.58);
+    }
+
+    .script-row .btn {
+      min-width: 34px;
+      width: 34px;
+      padding: 0;
+    }
+
+    .script-order {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(79, 140, 255, 0.38);
+      border-radius: 6px;
+      color: var(--accent);
+      background: #13233f;
+      font-weight: 800;
+    }
+
+    .script-row-main {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .script-row-primary,
+    .script-row-secondary {
+      display: grid;
+      gap: 8px;
+    }
+
+    .script-row-primary {
+      grid-template-columns: minmax(180px, 1.3fr) minmax(160px, 1fr);
+    }
+
+    .script-row-secondary {
+      grid-template-columns: minmax(160px, 0.9fr) minmax(150px, 1fr) minmax(170px, 1fr);
+    }
+
+    .time-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .script-warning {
+      margin-top: 8px;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .result-header-tools {
+      justify-content: flex-end;
+      flex: 1;
+    }
+
+    .result-upscale-setting {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .result-upscale-setting select {
+      width: 150px;
+      height: 30px;
+    }
+
+    @media (max-width: 860px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .segmented {
+        width: 100%;
+        grid-template-columns: 1fr;
+      }
+
+      .segmented #modeVoice {
+        grid-column: auto;
+      }
+
+      .status-pill {
+        text-align: left;
+      }
+
+      .script-row {
+        grid-template-columns: 1fr;
+      }
+
+      .script-row-primary,
+      .script-row-secondary {
+        grid-template-columns: 1fr;
+      }
+
+      .script-row .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="title">Grok Imagine Studio <span class="beta-label">（Beta版）</span></div>
+    <div class="window-actions">
+      <button id="minimizeBtn" title="最小化">-</button>
+      <button id="closeBtn" title="閉じる">x</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="toolbar">
+      <div class="segmented" role="tablist" aria-label="mode">
+        <button id="modeImage" class="active" type="button">参照画像編集 / image2image</button>
+        <button id="modeVideo" type="button">参照画像から動画生成 / image2video</button>
+        <button id="modeVoice" type="button">音声ナレーション / voice read</button>
+      </div>
+      <div id="statusPill" class="status-pill">待機中</div>
+    </div>
+
+    <main class="content">
+      <div id="grokWatermark" class="corner-grok-watermark" aria-hidden="true">
+        <svg viewBox="0 0 128 128" role="img" focusable="false">
+          <path d="M19 108 L92 35 L111 16 L98 43 L33 108 Z" fill="currentColor"/>
+          <path d="M24 101 L44 81 C37 73 33 63 34 52 C36 34 50 20 69 17 C79 15 89 18 98 23 L88 39 C83 36 76 34 69 35 C59 36 51 41 45 48 C39 56 37 66 40 76 L28 88 L19 108 Z" fill="currentColor"/>
+          <path d="M45 103 L61 95 C72 99 85 96 94 88 C105 78 109 62 103 49 L113 31 C126 55 121 84 101 101 C85 115 62 117 45 103 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <section class="column side-column">
+        <div id="saveTargetPanel" class="panel">
+          <div class="panel-header">
+            <div class="panel-title">共通保存先</div>
+            <div id="activeLibrary" class="panel-sub">確認中</div>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label for="targetLibrarySelect">Eagleライブラリ</label>
+              <select id="targetLibrarySelect"></select>
+            </div>
+            <div class="field" style="margin-top:10px">
+              <label for="targetFolderSelect">登録フォルダ</label>
+              <select id="targetFolderSelect"></select>
+            </div>
+            <div class="row wrap" style="margin-top:10px">
+              <button id="chooseLibraryBtn" class="btn hidden" type="button">ライブラリ追加</button>
+              <button id="refreshFoldersBtn" class="btn" type="button">フォルダ再読込</button>
+              <button id="dryRunImportBtn" class="btn hidden" type="button">登録dry-run</button>
+              <button id="importSelectedBtn" class="btn primary hidden" type="button">選択を登録</button>
+            </div>
+            <div class="footer-note">画像・動画・音声ナレーションの保存先として共通で使います。</div>
+            <div class="footer-note">別ライブラリ登録時は、登録前に `metadata.json` / `mtime.json` / `tags.json` をバックアップします。</div>
+          </div>
+        </div>
+
+        <div id="usagePanel" class="panel">
+          <div class="panel-header">
+            <div class="panel-title">サブスク枠メモ</div>
+            <div id="usageText" class="panel-sub">推定</div>
+          </div>
+          <div class="panel-body">
+            <div id="usageDateText" class="notice">今日</div>
+            <div class="usage-stats">
+              <div class="usage-stat">
+                <div class="usage-label">画像</div>
+                <div id="usageImageCount" class="usage-value">0</div>
+              </div>
+              <div class="usage-stat">
+                <div class="usage-label">動画 480p</div>
+                <div id="usageVideo480Count" class="usage-value">0</div>
+              </div>
+              <div class="usage-stat">
+                <div class="usage-label">動画 720p</div>
+                <div id="usageVideo720Count" class="usage-value">0</div>
+              </div>
+            </div>
+            <div class="footer-note">Grok Buildで検出できた生成結果だけを自動カウントします。Grok Webの残数は確実取得できないため、生成枠を意識するためのローカル推定ステータスです。</div>
+          </div>
+        </div>
+
+        <div id="logPanel" class="panel">
+          <div class="panel-header">
+            <div class="panel-title">ログ</div>
+            <button id="clearLogBtn" class="btn ghost" type="button">消去</button>
+          </div>
+          <div class="panel-body">
+            <div id="log" class="log"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">参照素材</div>
+            <div id="refCount" class="panel-sub">0件</div>
+          </div>
+          <div class="panel-body">
+            <div class="row wrap">
+              <button id="loadSelectionBtn" class="btn primary hidden" type="button">internal selection</button>
+              <button id="addFilesBtn" class="btn hidden" type="button">internal file dialog</button>
+              <button id="stageBtn" class="btn warn hidden" type="button">内部準備</button>
+              <button id="clearRefsBtn" class="btn ghost" type="button">クリア</button>
+              <input id="fileInput" class="hidden" type="file" multiple accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.mp4,.mov,.webm,.m4v">
+            </div>
+            <div id="refHint" class="footer-note">Eagleで選択中の画像は起動時に自動取得します。追加したい画像はここへドロップしてください。</div>
+            <div class="row wrap hidden" style="margin-top:10px">
+              <button id="openStagingBtn" class="btn" type="button">内部フォルダを開く</button>
+              <button id="copyFilesBtn" class="btn" type="button">internal copy</button>
+              <div id="stagingStatus" class="panel-sub">未作成</div>
+            </div>
+            <div id="stagingPath" class="footer-note hidden"></div>
+            <div id="dropZone" class="drop-zone">Eagle画像または画像ファイルをここへドロップ。追加順に @1, @2, @3... として参照できます。</div>
+            <div id="refs" class="refs"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="column results-column">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">モード仕様</div>
+            <div id="modeSpecBadge" class="panel-sub">画像編集</div>
+          </div>
+          <div class="panel-body">
+            <div id="modeSpec" class="notice"></div>
+            <ul id="modeChecklist" class="checklist" style="margin-top:10px"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">プロンプト</div>
+            <div id="optimizerStatus" class="panel-sub">未最適化</div>
+          </div>
+          <div class="panel-body">
+            <div id="grokUserIntentField" class="field">
+              <label for="userIntent">コンセプト（生成意図 / 手入力説明）</label>
+              <textarea id="userIntent" placeholder="何を変えるか、どんな動画にするかを書いてください。画像そのものは最適化エンジンへ送りません。"></textarea>
+            </div>
+
+            <div id="imageOptions" class="grid-3" style="margin-top:10px">
+              <div class="field">
+                <label for="imageAspect">Aspect</label>
+                <select id="imageAspect">
+                  <option value="auto">参照に合わせる</option>
+                  <option value="1:1">1:1</option>
+                  <option value="4:5">4:5</option>
+                  <option value="3:4">3:4</option>
+                  <option value="2:3">2:3</option>
+                  <option value="16:9">16:9</option>
+                  <option value="9:16">9:16</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="imageResolution">解像度意図</label>
+                <select id="imageResolution">
+                  <option value="1k">1k</option>
+                  <option value="2k">2k</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="editStrength">変更度メモ</label>
+                <select id="editStrength">
+                  <option value="low">低: 元画像を強く維持</option>
+                  <option value="medium" selected>中: 指示と元画像を両立</option>
+                  <option value="high">高: 指示を優先して大きく変更</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="imageCount">生成枚数</label>
+                <input id="imageCount" type="number" min="1" max="8" value="2">
+              </div>
+            </div>
+
+            <div id="videoOptions" class="hidden" style="margin-top:10px">
+              <div class="section-label">脚本・脚色設定</div>
+              <div class="script-toolbar">
+                <select id="scriptPresetSelect">
+                  <option value="">推奨テンプレを追加</option>
+                </select>
+                <button id="addScriptRowBtn" class="btn" type="button">行追加</button>
+              </div>
+              <div id="scriptRows" class="script-rows"></div>
+              <div id="scriptTimingWarning" class="script-warning hidden"></div>
+              <div class="field" style="margin-top:10px">
+                <label for="dialogueTimeline">脚本・脚色メモ（手入力 / カメラ・動き含む）</label>
+                <textarea id="dialogueTimeline" placeholder="例: 0-2秒は目元へゆっくり寄り、セリフを小さく息混じりに。2-6秒は横へ小さくパンしながら安心した表情へ。字幕・吹き出し・画面内文字は出さない。"></textarea>
+                <input id="cameraMotion" class="hidden">
+              </div>
+
+              <div class="section-label">設定</div>
+              <div id="videoCoreSettings" class="grid-2">
+                <div class="field">
+                  <label for="videoResolution">解像度意図</label>
+                  <select id="videoResolution">
+                    <option value="480p">480p</option>
+                    <option value="720p" selected>720p</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="videoDuration">秒数</label>
+                  <select id="videoDuration">
+                    <option value="5">5秒</option>
+                    <option value="6" selected>6秒</option>
+                    <option value="10">10秒</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div id="voiceOptions" class="hidden" style="margin-top:10px">
+              <div class="section-label">Seed音声</div>
+              <div class="notice">自分が使用権限を持つ音声、または個人実験として問題のない音声のみ指定してください。実在人物になりすます用途、本人許可のない商用・公開用途には使用しないでください。</div>
+              <div class="row wrap" style="margin-top:10px">
+                <button id="chooseSeedAudioBtn" class="btn primary" type="button">Seed WAVを選択</button>
+                <button id="clearSeedAudioBtn" class="btn ghost" type="button">Seedをクリア</button>
+                <input id="voiceSeedInput" class="hidden" type="file" accept=".wav,audio/wav,audio/x-wav">
+              </div>
+              <div id="voiceSeedStatus" class="footer-note">未選択。v1は .wav のみ対応します。</div>
+              <div id="voiceSeedDropZone" class="drop-zone" style="margin-top:10px">Seed音声の .wav ファイルをここへドロップ</div>
+
+              <div class="field" style="margin-top:10px">
+                <label for="voiceName">生成ボイス名</label>
+                <input id="voiceName" type="text" placeholder="例: 朝の案内_穏やか">
+                <div class="footer-note">未入力なら日時つきの分かりやすい名前で保存します。</div>
+              </div>
+
+              <div class="field" style="margin-top:10px">
+                <label for="voiceProfileSelect">ボイスプリセット</label>
+                <select id="voiceProfileSelect">
+                  <option value="">保存済みプリセットなし</option>
+                </select>
+                <div class="row wrap" style="margin-top:8px">
+                  <button id="saveSeedVoiceProfileBtn" class="btn" type="button">現在のSeedをプリセット保存</button>
+                  <button id="refreshVoiceProfilesBtn" class="btn ghost" type="button">再読込</button>
+                </div>
+                <div class="footer-note">生成済みWAVは候補カードの「Preset保存」から、次回のSeed音声として再利用できます。</div>
+              </div>
+
+              <div class="field" style="margin-top:10px">
+                <label for="voiceText">読み上げテキスト</label>
+                <textarea id="voiceText" placeholder="ナレーションとして読み上げる本文を書いてください。v1は長文分割をしません。"></textarea>
+                <div id="voiceTextWarning" class="script-warning hidden"></div>
+              </div>
+
+              <div class="field" style="margin-top:10px">
+                <label for="voiceDirection">脚色指示</label>
+                <textarea id="voiceDirection" placeholder="例: 少し寂しいが、聞き手を安心させるように。近い距離で、自然なナレーション。"></textarea>
+              </div>
+
+              <div class="grid-2" style="margin-top:10px">
+                <div class="field">
+                  <label for="voicePreset">Preset</label>
+                  <select id="voicePreset">
+                    <option value="fast">fast</option>
+                    <option value="balanced" selected>balanced</option>
+                    <option value="quality">quality</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Backend</label>
+                  <div class="model-display">Irodori-TTS VoiceDesign</div>
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:10px">
+                <label for="voicePromptPreview">読み上げ指示プレビュー</label>
+                <textarea id="voicePromptPreview" spellcheck="false" readonly></textarea>
+                <div id="voicePromptPreviewStatus" class="notice">入力中は仮プレビューです。生成ボタンを押すとGrok CLI最適化を実行します。</div>
+                <div class="footer-note">入力中は脚色指示から決定的に作る仮プレビューです。生成時にGrok CLIで最適化し、成功時は最適化後の最終指示、失敗時はこの仮プレビューを `voice_prompt_preview.txt` としてIrodori-TTSへ渡します。</div>
+              </div>
+            </div>
+
+            <div id="grokOptimizerOptions" class="grid-2" style="margin-top:10px">
+              <div class="field">
+                <label for="optimizerBackend">最適化バックエンド</label>
+                <select id="optimizerBackend">
+                  <option value="grok_cli">Grok</option>
+                  <option value="eagle_ai">ローカルLLM</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>モデル</label>
+                <div id="optimizerModelName" class="model-display">Grok CLI</div>
+              </div>
+            </div>
+            <input id="grokCliPath" class="hidden" value="grok">
+
+            <div id="grokPromptActions" class="row wrap hidden" style="margin-top:10px">
+              <button id="buildPromptBtn" class="btn" type="button">プロンプト作成</button>
+              <button id="copyPromptBtn" class="btn" type="button">コピー</button>
+            </div>
+
+            <div id="grokPromptField" class="field" style="margin-top:10px">
+              <label for="finalPrompt">Grokへ渡すプロンプト</label>
+              <textarea id="finalPrompt" spellcheck="false"></textarea>
+              <div class="textarea-action left">
+                <button id="optimizePromptBtn" class="btn primary" type="button">プロンプト最適化</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">生成結果</div>
+            <div class="result-header-tools">
+              <div id="resultUpscaleSetting" class="result-upscale-setting hidden">
+                <span>アップスケール設定</span>
+                <select id="videoUpscale">
+                  <option value="none">なし</option>
+                  <option value="1080p">FFmpeg 1080p</option>
+                  <option value="1440p">FFmpeg 1440p</option>
+                  <option value="2160p">FFmpeg 4K</option>
+                </select>
+              </div>
+              <div id="watchStatus" class="panel-sub">待機中</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="row wrap">
+              <button id="runGrokBuildBtn" class="btn primary" type="button">画像を生成</button>
+              <button id="retryVideoBtn" class="btn warn hidden" type="button">動画を再生成</button>
+              <button id="armWatchBtn" class="btn warn hidden" type="button">Downloads監視開始</button>
+              <button id="scanNowBtn" class="btn hidden" type="button">候補更新</button>
+              <button id="stopWatchBtn" class="btn ghost hidden" type="button">停止</button>
+            </div>
+            <div class="hidden" style="margin-top:10px">
+              <div class="field">
+                <label for="downloadsPath">Downloads</label>
+                <input id="downloadsPath">
+              </div>
+            </div>
+            <input id="grokWebUrl" class="hidden" value="https://grok.com/imagine">
+            <div id="candidateList" class="list"></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="js/plugin.js"></script>
+</body>
+</html>

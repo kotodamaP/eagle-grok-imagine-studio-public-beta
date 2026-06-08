@@ -1,0 +1,22 @@
+{
+  "grokCliCommand": "grok",
+  "grokImagineUrl": "https://grok.com/imagine",
+  "ffmpegCommand": "ffmpeg",
+  "ffprobeCommand": "ffprobe",
+  "environmentOverrides": {
+    "GROK_CLI_COMMAND": "grok",
+    "FFMPEG_PATH": "ffmpeg",
+    "FFPROBE_PATH": "ffprobe",
+    "UPSCAYL_BIN": "<PATH_TO_UPSCAYL_BIN>",
+    "UPSCAYL_MODELS": "<PATH_TO_UPSCAYL_MODELS>"
+  },
+  "eagleTargetLibrary": "use-current-library",
+  "localOptimizer": "eagle-ai-sdk-default-chat-model",
+  "irodoriTtsRoot": "<PATH_TO_IRODORI_TTS>",
+  "irodoriVoiceReadRunner": "<PATH_TO_COMPATIBLE_VOICE_RUNNER>",
+  "notes": [
+    "This file is a public example. Copy values into your own local setup instead of committing real machine-specific config.",
+    "The plugin defaults to commands on PATH and the Eagle library that launched the plugin.",
+    "No XAI_API_KEY or direct API key is required by this plugin; Grok generation uses the user's own Grok CLI / Grok Build environment."
+  ]
+}

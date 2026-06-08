@@ -1,0 +1,36 @@
+{
+  "id": "eagle-grok-imagine-studio",
+  "version": "0.1.0",
+  "platform": "all",
+  "arch": "all",
+  "name": "{{manifest.app.name}}",
+  "logo": "./logo.png",
+  "keywords": [
+    "grok",
+    "imagine",
+    "image",
+    "video",
+    "reference",
+    "api-free"
+  ],
+  "dependencies": [
+    "ffmpeg",
+    "ai-sdk"
+  ],
+  "fallbackLanguage": "ja_JP",
+  "languages": [
+    "ja_JP",
+    "en"
+  ],
+  "main": {
+    "url": "index.html",
+    "width": 960,
+    "height": 820,
+    "minWidth": 760,
+    "minHeight": 660,
+    "frame": false,
+    "vibrancy": false,
+    "resizable": true,
+    "opacity": 1
+  }
+}
