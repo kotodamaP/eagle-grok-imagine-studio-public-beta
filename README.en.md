@@ -12,6 +12,8 @@ This is a first public debugging build. It is not a polished extension-store rel
 
 This public version does not include the author's Grok login state, local settings, local paths, generated media, or work logs. Users must configure their own Grok CLI environment separately.
 
+![Grok Imagine Studio voice read screen](docs/images/grok-imagine-studio-voice-read.png)
+
 <!-- section:audience -->
 ## Audience
 

@@ -12,6 +12,8 @@ Eagle Grok Imagine Studio 是一个个人制作的 Eagle 4.0 插件，用于把 
 
 这个公开版本不包含作者的 Grok 登录状态、本地设置、本地路径、生成媒体或工作日志。用户需要在自己的环境中配置 Grok CLI。
 
+![Grok Imagine Studio voice read screen](docs/images/grok-imagine-studio-voice-read.png)
+
 <!-- section:audience -->
 ## 适用用户
 
