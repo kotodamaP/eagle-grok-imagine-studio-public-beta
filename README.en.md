@@ -68,6 +68,8 @@ node .\scripts\smoke-ui.js
 node .\scripts\smoke-runprocess.js
 ```
 
+For a first-time setup, it is recommended to give this README and `public_config_requirements.md` to Codex and ask it to walk you through installation and local configuration. When doing so, have Codex refer to the Grok CLI, FFmpeg, and Eagle AI SDK model available in your own environment. This plugin itself does not require adding an API key.
+
 To use it in Eagle, place this folder in the Eagle plugins directory, restart Eagle, and open it against a small test library first. For the first run, verify reference loading and prompt creation before running real generation.
 
 <!-- section:configuration -->

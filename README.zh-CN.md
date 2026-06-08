@@ -68,6 +68,8 @@ node .\scripts\smoke-ui.js
 node .\scripts\smoke-runprocess.js
 ```
 
+首次安装时，建议把本 README 和 `public_config_requirements.md` 交给 Codex，让它根据你的本地环境引导安装和配置调整。请让 Codex 引用你自己的 Grok CLI、FFmpeg 和 Eagle AI SDK 模型环境。本插件本身不需要额外添加 API key。
+
 在 Eagle 中使用时，请将此文件夹放入 Eagle 插件目录，重启 Eagle，并先用一个小型测试资料库打开。第一次运行建议先确认参考图片读取和提示词生成，再执行真实生成。
 
 <!-- section:configuration -->

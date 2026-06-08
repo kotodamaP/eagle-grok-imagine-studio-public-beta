@@ -68,6 +68,8 @@ node .\scripts\smoke-ui.js
 node .\scripts\smoke-runprocess.js
 ```
 
+初めて導入する場合は、このREADMEと `public_config_requirements.md` をCodexに読ませて、インストール手順と設定調整を案内してもらうのがおすすめです。その場合も、Grok CLI、FFmpeg、Eagle AI SDKのモデルなどは利用者自身の環境にあるものを参照させてください。このプラグイン自体にAPIキーを追加する必要はありません。
+
 Eagleで使う場合は、このフォルダをEagleのプラグインフォルダへ配置し、Eagleを再起動してから小さなテストライブラリで開いてください。初回は実生成ではなく、参照画像の読み込みとプロンプト作成だけ確認するのがおすすめです。
 
 <!-- section:configuration -->
